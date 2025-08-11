@@ -1,13 +1,26 @@
 # Security Policy
 
-## Supported versions
+If you believe you have found a security vulnerability in this repository, please report it responsibly.
 
-We always recommend using the latest version of Infisical to ensure you get all security updates.
+## Reporting a Vulnerability
 
-## Reporting vulnerabilities
+- Prefer the private GitHub Security Advisories workflow:
+  https://github.com/plumwheel/ragnos-vault/security/advisories/new
 
-Please do not file GitHub issues or post on our public forum for security vulnerabilities, as they are public!
+- Alternatively, open a new issue with the "Security" label and only include non‑sensitive details. A maintainer will follow up with a private channel.
 
-Infisical takes security issues very seriously. If you have any concerns about Infisical or believe you have uncovered a vulnerability, please get in touch via the e-mail address security@infisical.com. In the message, try to provide a description of the issue and ideally a way of reproducing it. The security team will get back to you as soon as possible.
+Please do not disclose vulnerabilities publicly until we have had a reasonable time to investigate and release a fix.
 
-Note that this security address should be used only for undisclosed vulnerabilities. Please report any security problems to us before disclosing it publicly.
+## Supported Versions
+
+We aim to patch the latest main branch and the most recent stable release when applicable.
+
+## Disclosure Policy
+
+- We will acknowledge receipt of your report within 3 business days.
+- We will work to validate and remediate the issue as quickly as possible.
+- We will credit reporters if they desire and if a fix is released.
+
+## Upstream Security
+
+This project is a fork of Infisical. We monitor upstream security advisories and apply relevant patches.

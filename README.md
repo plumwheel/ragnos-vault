@@ -1,3 +1,12 @@
+<\!-- BEGIN FORK BANNER -->
+> **Fork Notice**
+>
+> **RAGnos Vault** is an independent fork of [Infisical](https://github.com/Infisical/infisical).
+> This project is not affiliated with or endorsed by the Infisical maintainers.
+>
+> See [NOTICE](NOTICE) and [TRADEMARKS.md](TRADEMARKS.md) for attribution and trademark policies.
+<\!-- END FORK BANNER -->
+
 <h1 align="center">
   <img width="300" src="/img/logoname-white.svg#gh-dark-mode-only" alt="infisical">
 </h1>

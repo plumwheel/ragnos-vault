@@ -1,0 +1,16 @@
+# Global code owners for RAGnos Vault
+* @plumwheel
+
+# Legal and compliance files require careful review
+NOTICE @plumwheel
+TRADEMARKS.md @plumwheel  
+SECURITY.md @plumwheel
+CONTRIBUTING.md @plumwheel
+CODE_OF_CONDUCT.md @plumwheel
+LICENSE @plumwheel
+
+# Core architecture and configuration
+docker-compose*.yml @plumwheel
+Dockerfile* @plumwheel
+helm-charts/ @plumwheel
+k8-operator/ @plumwheel
