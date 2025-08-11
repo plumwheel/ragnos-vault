@@ -1,0 +1,881 @@
+openapi: 3.1.0
+info:
+  title: RAGnos Vault Control Plane API
+  description: Universal secrets management control plane with pluggable provider backends
+  version: 1.0.0
+  contact:
+    name: RAGnos Labs
+    email: labs@ragnos.io
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://api.ragnos.io
+    description: Production
+
+security:
+  - bearerAuth: []
+
+paths:
+  # Health & System
+  /health:
+    get:
+      summary: System health check
+      tags: [System]
+      security: []
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+  /metrics:
+    get:
+      summary: System metrics
+      tags: [System]
+      responses:
+        '200':
+          description: System metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  # Providers
+  /providers:
+    post:
+      summary: Register a new provider
+      tags: [Providers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProviderRequest'
+      responses:
+        '201':
+          description: Provider created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+    get:
+      summary: List providers
+      tags: [Providers]
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [infisical-ce, aws-secrets-manager, hashicorp-vault, mock]
+      responses:
+        '200':
+          description: List of providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Provider'
+
+  /providers/{providerId}:
+    get:
+      summary: Get provider details
+      tags: [Providers]
+      parameters:
+        - $ref: '#/components/parameters/ProviderId'
+      responses:
+        '200':
+          description: Provider details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete provider
+      tags: [Providers]
+      parameters:
+        - $ref: '#/components/parameters/ProviderId'
+      responses:
+        '204':
+          description: Provider deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /providers/{providerId}/capabilities:
+    get:
+      summary: Get provider capabilities
+      tags: [Providers]
+      parameters:
+        - $ref: '#/components/parameters/ProviderId'
+      responses:
+        '200':
+          description: Provider capabilities
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderCapabilities'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /providers/{providerId}/health:
+    get:
+      summary: Check provider health
+      tags: [Providers]
+      parameters:
+        - $ref: '#/components/parameters/ProviderId'
+      responses:
+        '200':
+          description: Provider health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderHealth'
+
+  # Targets
+  /targets:
+    post:
+      summary: Create a new target
+      tags: [Targets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTargetRequest'
+      responses:
+        '201':
+          description: Target created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+    get:
+      summary: List targets
+      tags: [Targets]
+      parameters:
+        - name: project
+          in: query
+          schema:
+            type: string
+        - name: environment
+          in: query
+          schema:
+            type: string
+        - name: providerId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of targets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Target'
+
+  /targets/{targetId}:
+    get:
+      summary: Get target details
+      tags: [Targets]
+      parameters:
+        - $ref: '#/components/parameters/TargetId'
+      responses:
+        '200':
+          description: Target details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Target'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update target
+      tags: [Targets]
+      parameters:
+        - $ref: '#/components/parameters/TargetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTargetRequest'
+      responses:
+        '200':
+          description: Target updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Target'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete target
+      tags: [Targets]
+      parameters:
+        - $ref: '#/components/parameters/TargetId'
+      responses:
+        '204':
+          description: Target deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Secrets Operations
+  /secrets/read:
+    post:
+      summary: Read a secret
+      tags: [Secrets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadSecretRequest'
+      responses:
+        '200':
+          description: Secret retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /secrets/write:
+    post:
+      summary: Write a secret
+      tags: [Secrets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WriteSecretRequest'
+      responses:
+        '200':
+          description: Secret written
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecretItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /secrets/delete:
+    post:
+      summary: Delete a secret
+      tags: [Secrets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteSecretRequest'
+      responses:
+        '204':
+          description: Secret deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /secrets/list:
+    post:
+      summary: List secrets
+      tags: [Secrets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListSecretsRequest'
+      responses:
+        '200':
+          description: Secrets listed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SecretItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /secrets/batch:
+    post:
+      summary: Batch operations on secrets
+      tags: [Secrets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchSecretsRequest'
+      responses:
+        '200':
+          description: Batch operations completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchSecretsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # Audit
+  /audits:
+    get:
+      summary: Get audit events
+      tags: [Audit]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: action
+          in: query
+          schema:
+            type: string
+            enum: [read, write, delete, list, batch]
+        - name: actor
+          in: query
+          schema:
+            type: string
+        - name: targetId
+          in: query
+          schema:
+            type: string
+        - name: fromTimestamp
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: toTimestamp
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Audit events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEventsResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ProviderId:
+      name: providerId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    
+    TargetId:
+      name: targetId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    # System Schemas
+    HealthStatus:
+      type: object
+      required: [status, timestamp]
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: object
+          additionalProperties: true
+
+    # Provider Schemas
+    Provider:
+      type: object
+      required: [id, type, name, capabilities, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [infisical-ce, aws-secrets-manager, hashicorp-vault, mock]
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        capabilities:
+          $ref: '#/components/schemas/ProviderCapabilities'
+        config:
+          type: object
+          description: Provider-specific configuration (sensitive fields redacted)
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateProviderRequest:
+      type: object
+      required: [type, name, config]
+      properties:
+        type:
+          type: string
+          enum: [infisical-ce, aws-secrets-manager, hashicorp-vault, mock]
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        config:
+          type: object
+          description: Provider-specific configuration
+          additionalProperties: true
+
+    ProviderCapabilities:
+      type: object
+      required: [read, write, delete, list]
+      properties:
+        read:
+          type: boolean
+        write:
+          type: boolean
+        delete:
+          type: boolean
+        list:
+          type: boolean
+        versions:
+          type: boolean
+          default: false
+        rotate:
+          type: boolean
+          default: false
+        batch:
+          type: boolean
+          default: false
+
+    ProviderHealth:
+      type: object
+      required: [ok, timestamp]
+      properties:
+        ok:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: object
+          additionalProperties: true
+
+    # Target Schemas
+    Target:
+      type: object
+      required: [id, project, environment, providerId, mapping, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        project:
+          type: string
+          minLength: 1
+          maxLength: 100
+        environment:
+          type: string
+          minLength: 1
+          maxLength: 50
+        providerId:
+          type: string
+          format: uuid
+        mapping:
+          $ref: '#/components/schemas/ProviderMapping'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateTargetRequest:
+      type: object
+      required: [project, environment, providerId, mapping]
+      properties:
+        project:
+          type: string
+          minLength: 1
+          maxLength: 100
+        environment:
+          type: string
+          minLength: 1
+          maxLength: 50
+        providerId:
+          type: string
+          format: uuid
+        mapping:
+          $ref: '#/components/schemas/ProviderMapping'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    UpdateTargetRequest:
+      type: object
+      properties:
+        mapping:
+          $ref: '#/components/schemas/ProviderMapping'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    ProviderMapping:
+      type: object
+      description: Maps RAGnos concepts to provider-specific namespaces
+      properties:
+        namespace:
+          type: string
+          description: Provider namespace (e.g., Infisical workspace/project)
+        path:
+          type: string
+          description: Path prefix for secrets
+        environment:
+          type: string
+          description: Provider environment (e.g., Infisical environment)
+        additionalProperties:
+          type: string
+
+    # Secret Schemas
+    SecretRef:
+      type: object
+      required: [targetId, key]
+      properties:
+        targetId:
+          type: string
+          format: uuid
+        key:
+          type: string
+          minLength: 1
+          maxLength: 200
+        version:
+          type: string
+
+    SecretItem:
+      type: object
+      required: [key]
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+          description: Secret value (only present in responses, never logged)
+        version:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    ReadSecretRequest:
+      allOf:
+        - $ref: '#/components/schemas/SecretRef'
+
+    WriteSecretRequest:
+      type: object
+      required: [targetId, key, value]
+      properties:
+        targetId:
+          type: string
+          format: uuid
+        key:
+          type: string
+          minLength: 1
+          maxLength: 200
+        value:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+
+    DeleteSecretRequest:
+      allOf:
+        - $ref: '#/components/schemas/SecretRef'
+
+    ListSecretsRequest:
+      type: object
+      required: [targetId]
+      properties:
+        targetId:
+          type: string
+          format: uuid
+        prefix:
+          type: string
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+
+    BatchOperation:
+      type: object
+      required: [operation]
+      discriminator:
+        propertyName: operation
+        mapping:
+          read: '#/components/schemas/BatchReadOperation'
+          write: '#/components/schemas/BatchWriteOperation'
+          delete: '#/components/schemas/BatchDeleteOperation'
+      properties:
+        operation:
+          type: string
+          enum: [read, write, delete]
+        id:
+          type: string
+          description: Client-provided operation ID for correlation
+
+    BatchReadOperation:
+      allOf:
+        - $ref: '#/components/schemas/BatchOperation'
+        - $ref: '#/components/schemas/ReadSecretRequest'
+
+    BatchWriteOperation:
+      allOf:
+        - $ref: '#/components/schemas/BatchOperation'
+        - $ref: '#/components/schemas/WriteSecretRequest'
+
+    BatchDeleteOperation:
+      allOf:
+        - $ref: '#/components/schemas/BatchOperation'
+        - $ref: '#/components/schemas/DeleteSecretRequest'
+
+    BatchSecretsRequest:
+      type: object
+      required: [operations]
+      properties:
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchOperation'
+          minItems: 1
+          maxItems: 100
+
+    BatchResult:
+      type: object
+      required: [id, success]
+      properties:
+        id:
+          type: string
+        success:
+          type: boolean
+        result:
+          oneOf:
+            - $ref: '#/components/schemas/SecretItem'
+            - type: null
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+
+    BatchSecretsResponse:
+      type: object
+      required: [results]
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchResult'
+
+    # Audit Schemas
+    AuditEvent:
+      type: object
+      required: [id, timestamp, actor, action, outcome]
+      properties:
+        id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        actor:
+          type: string
+          description: Actor identifier (service account, user ID)
+        action:
+          type: string
+          enum: [read, write, delete, list, batch, provider.create, provider.delete, target.create, target.update, target.delete]
+        resourceRef:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [secret, provider, target]
+            id:
+              type: string
+            key:
+              type: string
+              description: Secret key (for secret operations)
+        outcome:
+          type: string
+          enum: [success, failure, denied]
+        error:
+          type: string
+          description: Error message (for failed operations)
+        redactedContext:
+          type: object
+          description: Additional context with sensitive data redacted
+          additionalProperties: true
+
+    AuditEventsResponse:
+      type: object
+      required: [events, total, offset, limit]
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEvent'
+        total:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+
+    # Error Schemas
+    ErrorDetail:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          enum: [
+            # Provider Errors
+            NotFound, AlreadyExists, PermissionDenied, RateLimited, 
+            Unavailable, InvalidRequest, Unknown,
+            # Control Plane Errors
+            InvalidTarget, ProviderNotFound, TargetNotFound,
+            AuthenticationRequired, InsufficientPermissions,
+            ValidationError, InternalError
+          ]
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+
+    ProblemDetail:
+      type: object
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri
+          default: about:blank
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    Conflict:
+      description: Resource conflict
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'

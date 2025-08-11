@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  infisical:
+    image: infisical/infisical:latest
+    container_name: ragnos-vault-infisical-test
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - REDIS_URL=redis://redis:6379
+      - DB_CONNECTION_URI=postgresql://postgres:password@postgres:5432/infisical
+      - JWT_SECRET=your-jwt-secret-here
+      - ENCRYPTION_KEY=your-encryption-key-here
+      - SITE_URL=http://localhost:8080
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: ragnos-vault-infisical-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=infisical
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: ragnos-vault-infisical-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

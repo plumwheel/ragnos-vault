@@ -1,0 +1,61 @@
+{
+  "name": "@ragnos-vault/control-plane",
+  "version": "1.0.0",
+  "description": "RAGnos Vault Control Plane - Universal secrets management API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "db:reset": "prisma migrate reset --force",
+    "db:seed": "tsx scripts/seed.ts"
+  },
+  "keywords": [
+    "vault",
+    "secrets",
+    "control-plane",
+    "api",
+    "fastify"
+  ],
+  "author": "RAGnos Labs <labs@ragnos.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "eslint": "^8.57.1",
+    "prisma": "^5.7.0",
+    "tsup": "^8.0.1",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "@ragnos-vault/sdk": "workspace:*",
+    "@ragnos-vault/provider-infisical": "workspace:*",
+    "@fastify/swagger": "^8.12.0",
+    "@fastify/swagger-ui": "^2.1.0",
+    "@fastify/cors": "^9.0.0",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/rate-limit": "^9.0.1",
+    "@prisma/client": "^5.7.0",
+    "fastify": "^4.24.3",
+    "pino": "^8.16.2",
+    "zod": "^3.22.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "redis": "^4.6.0",
+    "bullmq": "^4.15.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

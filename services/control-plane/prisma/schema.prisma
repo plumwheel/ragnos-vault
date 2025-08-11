@@ -1,0 +1,202 @@
+// RAGnos Vault Control Plane Database Schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Organizations
+model Organization {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  projects    Project[]
+  members     OrganizationMember[]
+  apiKeys     ApiKey[]
+  auditEvents AuditEvent[]
+  
+  @@map("organizations")
+}
+
+// Projects within organizations
+model Project {
+  id             String    @id @default(cuid())
+  name           String
+  slug           String
+  description    String?
+  organizationId String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  // Relations
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  environments   Environment[]
+  secretStores   SecretStore[]
+  secretBindings SecretBinding[]
+  auditEvents    AuditEvent[]
+  
+  @@unique([organizationId, slug])
+  @@map("projects")
+}
+
+// Environments within projects (dev, staging, prod)
+model Environment {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+  projectId   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  secretBindings SecretBinding[]
+  
+  @@unique([projectId, slug])
+  @@map("environments")
+}
+
+// Secret stores (provider backends)
+model SecretStore {
+  id                String    @id @default(cuid())
+  name              String
+  type              String    // infisical-ce, aws-secrets-manager, vault, etc.
+  description       String?
+  projectId         String
+  config            Json      // Provider-specific configuration
+  encryptedCredentials String // KMS-encrypted provider credentials
+  keyId             String    // KMS key ID used for encryption
+  healthStatus      String    @default("unknown") // healthy, degraded, unhealthy, unknown
+  lastHealthCheck   DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  secretBindings SecretBinding[]
+  syncRuns       SyncRun[]
+  auditEvents    AuditEvent[]
+  
+  @@unique([projectId, name])
+  @@map("secret_stores")
+}
+
+// Bindings from logical secrets to provider secrets
+model SecretBinding {
+  id            String    @id @default(cuid())
+  logicalName   String    // Logical secret name (e.g., "database-password")
+  providerPath  String    // Provider-specific path/key
+  environmentId String
+  secretStoreId String
+  metadata      Json      @default("{}")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  secretStore   SecretStore @relation(fields: [secretStoreId], references: [id], onDelete: Cascade)
+  syncRuns      SyncRun[]
+  auditEvents   AuditEvent[]
+  
+  @@unique([environmentId, logicalName])
+  @@map("secret_bindings")
+}
+
+// Sync operations between control plane and providers
+model SyncRun {
+  id              String    @id @default(cuid())
+  type            String    // read, write, delete, sync, health-check
+  status          String    // pending, running, completed, failed
+  secretStoreId   String?
+  secretBindingId String?
+  input           Json      @default("{}")
+  output          Json      @default("{}")
+  error           String?
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  
+  // Relations
+  secretStore     SecretStore?   @relation(fields: [secretStoreId], references: [id], onDelete: SetNull)
+  secretBinding   SecretBinding? @relation(fields: [secretBindingId], references: [id], onDelete: SetNull)
+  auditEvents     AuditEvent[]
+  
+  @@map("sync_runs")
+}
+
+// Organization membership
+model OrganizationMember {
+  id             String    @id @default(cuid())
+  userId         String    // External user ID (from OIDC/SSO)
+  organizationId String
+  role           String    // owner, admin, member, viewer
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  
+  // Relations
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  @@unique([organizationId, userId])
+  @@map("organization_members")
+}
+
+// API keys for service-to-service access
+model ApiKey {
+  id             String    @id @default(cuid())
+  name           String
+  keyHash        String    @unique // bcrypt hash of the key
+  keyPrefix      String    // First 8 chars for identification
+  organizationId String
+  projectId      String?   // Optional project scoping
+  scopes         String[]  // Permission scopes
+  expiresAt      DateTime?
+  lastUsedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  
+  // Relations
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  auditEvents    AuditEvent[]
+  
+  @@map("api_keys")
+}
+
+// Audit log for all operations
+model AuditEvent {
+  id              String    @id @default(cuid())
+  timestamp       DateTime  @default(now())
+  actor           String    // User ID or API key ID
+  actorType       String    // user, api_key, system
+  action          String    // create, read, update, delete, sync, etc.
+  resourceType    String    // secret_store, secret_binding, etc.
+  resourceId      String?
+  organizationId  String
+  projectId       String?
+  secretStoreId   String?
+  secretBindingId String?
+  syncRunId       String?
+  apiKeyId        String?
+  outcome         String    // success, failure, denied
+  error           String?
+  redactedContext Json      @default("{}")
+  
+  // Relations
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project         Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  secretStore     SecretStore?   @relation(fields: [secretStoreId], references: [id], onDelete: SetNull)
+  secretBinding   SecretBinding? @relation(fields: [secretBindingId], references: [id], onDelete: SetNull)
+  syncRun         SyncRun?       @relation(fields: [syncRunId], references: [id], onDelete: SetNull)
+  apiKey          ApiKey?        @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+  
+  @@index([timestamp])
+  @@index([organizationId, timestamp])
+  @@index([action, timestamp])
+  @@map("audit_events")
+}
