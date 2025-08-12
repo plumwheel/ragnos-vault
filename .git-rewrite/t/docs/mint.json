@@ -1,0 +1,175 @@
+{
+  "name": "Infisical",
+  "basePath": "/docs",
+  "logo": {
+    "dark": "/docs/logo/dark.svg",
+    "light": "/docs/logo/light.svg",
+    "href": "https://infisical.com"
+  },
+  "favicon": "/favicon.png",
+  "colors": {
+    "primary": "#A1B659",
+    "light": "#E1EB55",
+    "dark": "#A1B659",
+    "ultraLight": "#EFF4DD",
+    "ultraDark": "#8D9F4C",
+    "background": {
+      "dark": "#0D1117"
+    },
+    "anchors": {
+      "from": "#A1B659",
+      "to": "#F8B7BD"
+    }
+  },
+  "topbarLinks": [{ "name": "Log In", "url": "https://app.infisical.com/login" }],
+  "topbarCtaButton": {
+    "name": "Start for Free",
+    "url": "https://app.infisical.com/signup"
+  },
+  "anchors": [
+    {
+      "name": "Security",
+      "icon": "shield-halved",
+      "url": "security"
+    },
+    {
+      "name": "Self-hosting",
+      "icon": "server",
+      "url": "self-hosting"
+    },
+    {
+      "name": "Integrations",
+      "icon": "plug",
+      "url": "integrations"
+    },
+    {
+      "name": "Contributing",
+      "icon": "code",
+      "url": "contributing"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://blog.infisical.com/"
+    },
+    {
+      "name": "Slack",
+      "icon": "slack",
+      "url": "https://join.slack.com/t/infisical-users/shared_invite/zt-1kovn1q6p-p5fvJo7o083naouDkOzgZQ"
+    },
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/Infisical/infisical"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Overview",
+      "pages": [
+        "getting-started/introduction",
+        "getting-started/quickstart",
+        "getting-started/features"
+      ]
+    },
+    {
+      "group": "Platform",
+      "pages": [
+        "getting-started/dashboard/organization",
+        "getting-started/dashboard/project",
+        "getting-started/dashboard/integrations",
+        "getting-started/dashboard/token"
+      ]
+    },
+    {
+      "group": "CLI",
+      "pages": [
+        "cli/overview",
+        "cli/usage",
+        {
+          "group": "Commands",
+          "pages": [
+            "cli/commands/login",
+            "cli/commands/init",
+            "cli/commands/run",
+            "cli/commands/export"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Self-hosting",
+      "pages": [
+        "self-hosting/overview",
+        {
+          "group": "Deployments options",
+          "pages": [
+            "self-hosting/deployments/linux",
+            "self-hosting/deployments/kubernetes"
+          ]
+        },
+        {
+          "group": "Configuration",
+          "pages": ["self-hosting/configuration/envars"]
+        }
+      ]
+    }, 
+    {
+      "group": "Integrations",
+      "pages": [
+        "integrations/overview"
+      ]
+    },
+    {
+      "group": "Platforms",
+      "pages": [
+        "integrations/platforms/docker",
+        "integrations/platforms/docker-compose"
+      ]
+    },
+    {
+      "group": "Cloud",
+      "pages": [
+        "integrations/cloud/heroku",
+        "integrations/cloud/vercel"
+      ]
+    },
+    {
+      "group": "Frameworks",
+      "pages": [
+        "integrations/frameworks/react",
+        "integrations/frameworks/vue",
+        "integrations/frameworks/express",
+        "integrations/frameworks/nextjs",
+        "integrations/frameworks/nestjs",
+        "integrations/frameworks/nuxt",
+        "integrations/frameworks/gatsby",
+        "integrations/frameworks/remix",
+        "integrations/frameworks/vite",
+        "integrations/frameworks/fiber",
+        "integrations/frameworks/django",
+        "integrations/frameworks/flask",
+        "integrations/frameworks/laravel",
+        "integrations/frameworks/rails"
+      ]
+    },
+    {
+      "group": "Security",
+      "pages": [
+        "security/overview",
+        "security/data-model",
+        "security/mechanics"
+      ]
+    },
+    {
+      "group": "Contributing",
+      "pages": [
+        "contributing/overview",
+        "contributing/code-of-conduct",
+        "contributing/developing",
+        "contributing/FAQ"
+      ]
+    }
+  ],
+  "backgroundImage": "/images/background.png"
+}
