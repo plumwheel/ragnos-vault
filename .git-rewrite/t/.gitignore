@@ -1,16 +1,10 @@
 # backend
 node_modules
 .env
-.env.*
-.env.test
 .env.dev
-.env.development
-.env.staging
-.env.gamma
 .env.prod
-.env.production
 .env.infisical
-.env.migration
+
 *~
 *.swp
 *.swo
@@ -18,8 +12,6 @@ node_modules
 .DS_Store
 
 /dist
-/completions/
-/manpages/
 
 # frontend
 
@@ -33,12 +25,10 @@ node_modules
 .env
 
 # testing
-coverage
-reports
-junit.xml
+/coverage
 
 # next.js
-.next/
+/.next/
 /out/
 
 # production
@@ -54,9 +44,7 @@ yarn-error.log*
 
 # local env files
 .env.local
-.env.*.local
 .env.development.local
-.env.staging.local
 .env.test.local
 .env.production.local
 .vercel
@@ -64,18 +52,3 @@ yarn-error.log*
 
 # Infisical init
 .infisical.json
-
-.infisicalignore
-
-# Editor specific
-.vscode/*
-.idea/*
-
-frontend-build
-
-*.tgz
-cli/infisical-merge
-cli/test/infisical-merge
-/backend/binary
-
-/npm/bin
