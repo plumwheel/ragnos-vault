@@ -7,6 +7,7 @@
  */
 
 const { TUFClient } = require('./tuf-client');
+const { HybridTUFClient } = require('./hybrid-tuf-client');
 const { LocalTUFRepository } = require('./local-tuf-repository');
 const fs = require('fs');
 const path = require('path');
@@ -135,15 +136,21 @@ class TUFIntegration {
           JSON.stringify(rootMetadata, null, 2)
         );
         
-        // Initialize local TUF client
-        this.localClient = new TUFClient({
-          repositoryUrl: `http://localhost:${this.localRepository.options.serverPort}`,
-          metadataDir: localMetadataDir,
-          cacheDir: localCacheDir,
-          maxMetadataAge: this.options.maxMetadataAge
+        // Initialize hybrid TUF client for local repository
+        this.localClient = new HybridTUFClient({
+          jsClientOptions: {
+            repositoryUrl: `http://localhost:${this.localRepository.options.serverPort}`,
+            metadataDir: localMetadataDir,
+            cacheDir: localCacheDir,
+            maxMetadataAge: this.options.maxMetadataAge
+          },
+          pythonClientOptions: {
+            // Python client options handled by hybrid client
+          },
+          clientMode: process.env.RAGNOS_TUF_CLIENT || 'auto'
         });
         
-        await this.localClient.initialize(rootMetadata);
+        await this.localClient.initialize();
         
         console.log('  ✓ Local TUF repository initialized');
         
@@ -166,16 +173,23 @@ class TUFIntegration {
     try {
       console.log('🌐 Checking remote TUF repository...');
       
-      this.remoteClient = new TUFClient({
-        repositoryUrl: this.options.remoteRepoUrl,
-        metadataDir: path.join(this.options.metadataDir, 'remote'),
-        cacheDir: path.join(this.options.cacheDir, 'remote'),
-        maxMetadataAge: this.options.maxMetadataAge
+      // Initialize hybrid TUF client for remote repository
+      this.remoteClient = new HybridTUFClient({
+        jsClientOptions: {
+          repositoryUrl: this.options.remoteRepoUrl,
+          metadataDir: path.join(this.options.metadataDir, 'remote'),
+          cacheDir: path.join(this.options.cacheDir, 'remote'),
+          maxMetadataAge: this.options.maxMetadataAge
+        },
+        pythonClientOptions: {
+          // Python client options handled by hybrid client
+        },
+        clientMode: process.env.RAGNOS_TUF_CLIENT || 'auto'
       });
       
       // Try to initialize (will require pinned root metadata in production)
       // For now, we'll mark as available but not initialize until needed
-      console.log('  ✓ Remote TUF client configured');
+      console.log('  ✓ Remote hybrid TUF client configured');
       
     } catch (error) {
       console.warn(`  ⚠️  Remote TUF client configuration failed: ${error.message}`);
