@@ -1,0 +1,12 @@
+{
+  "name": "ragvault-test-plugin",
+  "version": "1.0.0",
+  "description": "Test SDK plugin for RAGnos Vault",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {},
+  "ragvault": {
+    "type": "sdk-plugin",
+    "abi-version": "1.0"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "repository_type": "staging",
+  "created": "2025-08-13T01:50:17.826Z",
+  "base_url": "http://localhost:8080",
+  "metadata_url": "http://localhost:8080/metadata",
+  "targets_url": "http://localhost:8080/targets",
+  "consistent_snapshot": true,
+  "expiry_config": {
+    "root_days": 90,
+    "targets_days": 30,
+    "snapshot_days": 14,
+    "timestamp_hours": 24
+  },
+  "key_info": {
+    "root": {
+      "keyid": "c29678a3e2707b993990f34ace7a0d74e005ff86a3e604d19c7e4306dcc9905d",
+      "keytype": "rsa"
+    },
+    "targets": {
+      "keyid": "516d994e905e67713819f1b854c9eec7eb8a1751cea2b67a4c70321028aaaf1c",
+      "keytype": "rsa"
+    },
+    "snapshot": {
+      "keyid": "c34b6f5c701e470b1ae1d6a98b8ec8f9335ac328ef84219cf928583cd8cd44e9",
+      "keytype": "rsa"
+    },
+    "timestamp": {
+      "keyid": "7f53aa5335d50f1ef503eea9ad73963b68f4e695bac9c86025f8ecd62ff23c2b",
+      "keytype": "rsa"
+    }
+  }
+}

@@ -1,0 +1,460 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ragnos.io/schemas/provider-manifest/v1",
+  "title": "RAGnos Vault Provider Manifest",
+  "description": "Schema for RAGnos Vault provider plugin manifests",
+  "type": "object",
+  "required": ["id", "schemaVersion", "canonical", "transport"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_-]+$",
+      "minLength": 2,
+      "maxLength": 50,
+      "description": "Unique provider identifier (lowercase, alphanumeric, hyphens, underscores)"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "enum": ["v1"],
+      "description": "Manifest schema version"
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Human-readable provider name"
+    },
+    "vendor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Provider vendor/company name"
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri",
+      "description": "Provider documentation or homepage URL"
+    },
+    "license": {
+      "type": "string",
+      "pattern": "^[A-Z0-9.-]+$",
+      "description": "Plugin license (SPDX identifier)"
+    },
+    "requiresCore": {
+      "type": "string",
+      "pattern": "^[><]=?\\d+\\.\\d+\\.\\d+|\\^\\d+\\.\\d+\\.\\d+|~\\d+\\.\\d+\\.\\d+|\\d+\\.\\d+\\.\\d+$",
+      "description": "Compatible RAGnos Vault version range (semver)"
+    },
+    "canonical": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$",
+      "description": "Canonical environment variable name (UPPERCASE)"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "confidence"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$",
+            "description": "Alias environment variable name"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Confidence level of alias mapping"
+          },
+          "legacy": {
+            "type": "boolean",
+            "description": "Whether this is a legacy alias"
+          },
+          "ambiguous": {
+            "type": "boolean",
+            "description": "Whether this alias could map to multiple providers"
+          },
+          "deprecated": {
+            "type": "boolean",
+            "description": "Whether this alias is deprecated"
+          }
+        }
+      },
+      "uniqueItems": true,
+      "description": "Alternative environment variable names"
+    },
+    "capabilities": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "text.generate",
+              "text.embed", 
+              "image.generate",
+              "image.analyze",
+              "audio.transcribe",
+              "audio.synthesize",
+              "moderate.content",
+              "search.web",
+              "search.semantic",
+              "api.generic",
+              "auth.oauth2",
+              "auth.api_key",
+              "streaming",
+              "batch_processing"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Provider capabilities (legacy format)"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Capability type (network, filesystem, environment, etc.)"
+              },
+              "params": {
+                "type": "object",
+                "description": "Capability-specific parameters",
+                "additionalProperties": true
+              },
+              "justification": {
+                "type": "string",
+                "description": "Human-readable justification for requesting this capability"
+              }
+            },
+            "additionalProperties": false
+          },
+          "uniqueItems": true,
+          "description": "Provider capabilities (v2 structured format)"
+        }
+      ]
+    },
+    "transport": {
+      "type": "string",
+      "enum": ["http", "sdk"],
+      "description": "Communication transport method"
+    },
+    "conflictsWith": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_-]+$"
+      },
+      "uniqueItems": true,
+      "description": "Provider IDs that conflict (mutual exclusivity)"
+    },
+    "http": {
+      "type": "object",
+      "required": ["baseUrl"],
+      "additionalProperties": false,
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL for HTTP requests"
+        },
+        "auth": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["bearer", "api_key", "basic", "oauth2", "custom"]
+            },
+            "headerName": {
+              "type": "string",
+              "description": "HTTP header name for authentication"
+            },
+            "prefix": {
+              "type": "string",
+              "description": "Prefix for authentication value (e.g., 'Bearer ')"
+            },
+            "location": {
+              "type": "string",
+              "enum": ["header", "query", "body"],
+              "description": "Where to place the authentication value"
+            },
+            "paramName": {
+              "type": "string",
+              "description": "Parameter name for query/body auth"
+            }
+          }
+        },
+        "headers": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z0-9-]+$": {
+              "type": "string"
+            }
+          },
+          "description": "Default HTTP headers"
+        },
+        "operations": {
+          "type": "object",
+          "properties": {
+            "validate": {
+              "type": "object",
+              "required": ["method", "path"],
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"]
+                },
+                "path": {
+                  "type": "string",
+                  "pattern": "^/"
+                },
+                "timeout": {
+                  "type": "integer",
+                  "minimum": 1000,
+                  "maximum": 60000
+                },
+                "expectedStatus": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 599
+                  }
+                }
+              }
+            }
+          }
+        },
+        "rateLimits": {
+          "type": "object",
+          "properties": {
+            "requests": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "window": {
+              "type": "string",
+              "pattern": "^\\d+[smhd]$",
+              "description": "Time window (e.g., '1m', '1h')"
+            }
+          }
+        },
+        "retryPolicy": {
+          "type": "object",
+          "properties": {
+            "attempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "backoff": {
+              "type": "string",
+              "enum": ["linear", "exponential", "constant"]
+            },
+            "delay": {
+              "type": "integer",
+              "minimum": 100
+            }
+          }
+        }
+      },
+      "description": "HTTP transport configuration"
+    },
+    "sdk": {
+      "type": "object",
+      "required": ["package", "version", "entry"],
+      "additionalProperties": false,
+      "properties": {
+        "package": {
+          "type": "string",
+          "pattern": "^(@[a-z0-9-~][a-z0-9-._~]*/)?[a-z0-9-~][a-z0-9-._~]*$",
+          "description": "npm package name"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[><]=?\\d+\\.\\d+\\.\\d+|\\^\\d+\\.\\d+\\.\\d+|~\\d+\\.\\d+\\.\\d+|\\d+\\.\\d+\\.\\d+$",
+          "description": "Package version range"
+        },
+        "entry": {
+          "type": "string",
+          "description": "Entry point file path"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["streaming", "multimodal", "batch", "websocket"]
+          },
+          "uniqueItems": true
+        },
+        "installScripts": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to allow npm install scripts"
+        }
+      },
+      "description": "SDK transport configuration"
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Required API scopes"
+        },
+        "networkAllowlist": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "hostname"
+          },
+          "description": "Allowed network hosts"
+        },
+        "piiRules": {
+          "type": "object",
+          "properties": {
+            "maskApiKey": {
+              "type": "boolean",
+              "default": true
+            },
+            "logRedaction": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "sandbox": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["subprocess", "vm", "none"]
+            },
+            "timeout": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 300000
+            },
+            "memory": {
+              "type": "string",
+              "pattern": "^\\d+(MB|GB)$"
+            },
+            "cpu": {
+              "type": "string",
+              "pattern": "^\\d+(m|%)$"
+            }
+          }
+        }
+      },
+      "description": "Security configuration"
+    },
+    "fingerprints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "hostname"
+          },
+          "description": "Known API endpoints"
+        },
+        "libraries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Associated library names"
+        },
+        "envPatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Environment variable patterns (glob/regex)"
+        },
+        "filePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Configuration file patterns"
+        }
+      },
+      "description": "Context fingerprints for smart conflict resolution"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "type": "string",
+          "enum": ["ai", "cloud", "database", "messaging", "analytics", "security", "devtools"]
+        },
+        "maturity": {
+          "type": "string",
+          "enum": ["stable", "beta", "alpha", "experimental"]
+        },
+        "support": {
+          "type": "object",
+          "properties": {
+            "official": {
+              "type": "boolean"
+            },
+            "community": {
+              "type": "boolean"
+            },
+            "enterprise": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "transport": {
+            "const": "http"
+          }
+        }
+      },
+      "then": {
+        "required": ["http"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "transport": {
+            "const": "sdk"
+          }
+        }
+      },
+      "then": {
+        "required": ["sdk"]
+      }
+    }
+  ]
+}

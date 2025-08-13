@@ -1,0 +1,108 @@
+{
+  "id": "anthropic",
+  "schemaVersion": "v1",
+  "displayName": "Anthropic Claude",
+  "vendor": "Anthropic",
+  "homepage": "https://docs.anthropic.com/claude/reference",
+  "license": "MIT", 
+  "requiresCore": "^2.0.0",
+  "canonical": "ANTHROPIC_API_KEY",
+  "aliases": [
+    {
+      "name": "CLAUDE_API_KEY",
+      "confidence": "high",
+      "legacy": false,
+      "ambiguous": false
+    },
+    {
+      "name": "CLAUDE_KEY",
+      "confidence": "medium",
+      "legacy": true,
+      "ambiguous": false
+    },
+    {
+      "name": "ANTHROPIC_KEY",
+      "confidence": "high",
+      "legacy": true,
+      "ambiguous": false
+    }
+  ],
+  "capabilities": [
+    "text.generate",
+    "image.analyze",
+    "streaming",
+    "batch_processing"
+  ],
+  "transport": "http",
+  "http": {
+    "baseUrl": "https://api.anthropic.com/v1",
+    "auth": {
+      "type": "api_key",
+      "headerName": "x-api-key",
+      "location": "header"
+    },
+    "headers": {
+      "User-Agent": "RAGnos-Vault/2.0.0",
+      "Content-Type": "application/json",
+      "anthropic-version": "2023-06-01"
+    },
+    "operations": {
+      "validate": {
+        "method": "GET", 
+        "path": "/models",
+        "timeout": 8000,
+        "expectedStatus": [200]
+      }
+    },
+    "rateLimits": {
+      "requests": 50,
+      "window": "1m"
+    },
+    "retryPolicy": {
+      "attempts": 3,
+      "backoff": "exponential",
+      "delay": 1500
+    }
+  },
+  "security": {
+    "scopes": ["api:read"],
+    "networkAllowlist": [
+      "api.anthropic.com",
+      "*.anthropic.com"
+    ],
+    "piiRules": {
+      "maskApiKey": true,
+      "logRedaction": ["x-api-key", "apiKey"]
+    }
+  },
+  "fingerprints": {
+    "endpoints": [
+      "api.anthropic.com",
+      "console.anthropic.com"
+    ],
+    "libraries": [
+      "@anthropic-ai/sdk",
+      "anthropic-sdk",
+      "claude-api"
+    ],
+    "envPatterns": [
+      "ANTHROPIC_*",
+      "CLAUDE_*"
+    ],
+    "filePatterns": [
+      "anthropic.config.*",
+      "claude.config.*",
+      ".anthropic*"
+    ]
+  },
+  "metadata": {
+    "tags": ["ai", "llm", "text-generation", "claude"],
+    "category": "ai", 
+    "maturity": "stable",
+    "support": {
+      "official": true,
+      "community": true,
+      "enterprise": true
+    }
+  }
+}

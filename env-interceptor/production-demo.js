@@ -16,7 +16,7 @@ class ProductionDemo {
       canary_percent: 25, // Start with 25% canary in production
       monitor_duration_seconds: 60,
       test_interval_ms: 2000,
-      secret_name: 'HUGGINGFACE_API_KEY'
+      secret_name: 'GEMINI_API_KEY'
     };
     
     this.stats = {
@@ -90,7 +90,7 @@ class ProductionDemo {
         const startTime = Date.now();
         
         // Access the secret (this will be intercepted by vault)
-        const hfApiKey = process.env.HUGGINGFACE_API_KEY;
+        const geminiApiKey = process.env.GEMINI_API_KEY;
         
         const endTime = Date.now();
         const accessTime = endTime - startTime;
@@ -98,14 +98,14 @@ class ProductionDemo {
         // Log access details
         console.log('VAULT_ACCESS_COMPLETE');
         console.log('ACCESS_TIME_MS:' + accessTime);
-        console.log('KEY_ACCESSIBLE:' + (hfApiKey ? 'true' : 'false'));
-        console.log('KEY_LENGTH:' + (hfApiKey ? hfApiKey.length : 0));
+        console.log('KEY_ACCESSIBLE:' + (geminiApiKey ? 'true' : 'false'));
+        console.log('KEY_LENGTH:' + (geminiApiKey ? geminiApiKey.length : 0));
         
         // Simulate some processing that an MCP server might do
-        if (hfApiKey) {
-          console.log('SIMULATED_HF_REQUEST:success');
+        if (geminiApiKey) {
+          console.log('SIMULATED_GEMINI_REQUEST:success');
         } else {
-          console.log('SIMULATED_HF_REQUEST:failed');
+          console.log('SIMULATED_GEMINI_REQUEST:failed');
         }
         
         process.exit(0);
@@ -153,7 +153,7 @@ class ProductionDemo {
         cwd: '/Users/huntercanning/mouse-ops-o3/ragnos-vault/env-interceptor',
         env: { 
           ...process.env,
-          HUGGINGFACE_API_KEY: 'hf_prod_demo_test_key_12345',
+          GEMINI_API_KEY: 'gemini_prod_demo_test_key_12345',
           VAULT_MODE: this.demoConfig.mode,
           VAULT_CANARY_PERCENT: this.demoConfig.canary_percent.toString(),
           VAULT_DEBUG: 'false' // Reduce noise in demo

@@ -1,0 +1,22 @@
+{
+  "signed": {
+    "_type": "targets",
+    "spec_version": "1.0.0",
+    "version": 1,
+    "expires": "2025-09-12T01:50:17.825Z",
+    "targets": {
+      "plugins/ragnos-labs/sample-test-plugin/index.js": {
+        "length": 3407,
+        "hashes": {
+          "sha256": "ee5f5ccd00089db874686a95711d66c3f7d416b2f4319528af50a32d17279152"
+        }
+      }
+    }
+  },
+  "signatures": [
+    {
+      "keyid": "516d994e905e67713819f1b854c9eec7eb8a1751cea2b67a4c70321028aaaf1c",
+      "signature": "abd6f00475e8cfb1999f1d108350935c93b28c84ccf8eafbce3bc87191dee3a7"
+    }
+  ]
+}

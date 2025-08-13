@@ -1,0 +1,70 @@
+{
+  "id": "example-sdk",
+  "schemaVersion": "v1",
+  "displayName": "Example SDK Provider",
+  "vendor": "RAGnos Labs",
+  "homepage": "https://docs.ragnos.io/examples",
+  "license": "MIT",
+  "requiresCore": "^2.0.0",
+  "canonical": "EXAMPLE_API_KEY",
+  "aliases": [
+    {
+      "name": "TEST_API_KEY", 
+      "confidence": "high",
+      "legacy": false,
+      "ambiguous": false
+    }
+  ],
+  "capabilities": [
+    "api.generic",
+    "streaming"
+  ],
+  "transport": "sdk",
+  "sdk": {
+    "package": "ragvault-test-plugin",
+    "version": "1.0.0",
+    "entry": "index.js",
+    "features": ["streaming"],
+    "installScripts": false
+  },
+  "security": {
+    "scopes": ["api:read"],
+    "networkAllowlist": [
+      "api.example.com",
+      "*.example.com"
+    ],
+    "piiRules": {
+      "maskApiKey": true,
+      "logRedaction": ["apiKey", "authorization"]
+    },
+    "sandbox": {
+      "type": "subprocess",
+      "timeout": 30000,
+      "memory": "128MB",
+      "cpu": "50m"
+    }
+  },
+  "fingerprints": {
+    "endpoints": [
+      "api.example.com"
+    ],
+    "libraries": [
+      "example-sdk",
+      "ragvault-test-plugin"
+    ],
+    "envPatterns": [
+      "EXAMPLE_*",
+      "TEST_*"
+    ]
+  },
+  "metadata": {
+    "tags": ["test", "example", "sdk"],
+    "category": "devtools",
+    "maturity": "experimental",
+    "support": {
+      "official": true,
+      "community": false,
+      "enterprise": false
+    }
+  }
+}

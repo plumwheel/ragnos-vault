@@ -1,0 +1,106 @@
+{
+  "signed": {
+    "_type": "targets",
+    "spec_version": "1.0.0",
+    "version": 2,
+    "expires": "2025-11-11T02:28:43.337Z",
+    "targets": {
+      "plugins/RAGnos Labs/example-sdk.tar.gz": {
+        "length": 1574,
+        "hashes": {
+          "sha256": "62a4730cb7212487ef8d059b9adde6c763ffb6b05f7233c2d725e0fe2981b36d"
+        },
+        "custom": {
+          "manifest": {
+            "id": "example-sdk",
+            "schemaVersion": "v1",
+            "displayName": "Example SDK Provider",
+            "vendor": "RAGnos Labs",
+            "homepage": "https://docs.ragnos.io/examples",
+            "license": "MIT",
+            "requiresCore": "^2.0.0",
+            "canonical": "EXAMPLE_API_KEY",
+            "aliases": [
+              {
+                "name": "TEST_API_KEY",
+                "confidence": "high",
+                "legacy": false,
+                "ambiguous": false
+              }
+            ],
+            "capabilities": [
+              "api.generic",
+              "streaming"
+            ],
+            "transport": "sdk",
+            "sdk": {
+              "package": "ragvault-test-plugin",
+              "version": "1.0.0",
+              "entry": "index.js",
+              "features": [
+                "streaming"
+              ],
+              "installScripts": false
+            },
+            "security": {
+              "scopes": [
+                "api:read"
+              ],
+              "networkAllowlist": [
+                "api.example.com",
+                "*.example.com"
+              ],
+              "piiRules": {
+                "maskApiKey": true,
+                "logRedaction": [
+                  "apiKey",
+                  "authorization"
+                ]
+              },
+              "sandbox": {
+                "type": "subprocess",
+                "timeout": 30000,
+                "memory": "128MB",
+                "cpu": "50m"
+              }
+            },
+            "fingerprints": {
+              "endpoints": [
+                "api.example.com"
+              ],
+              "libraries": [
+                "example-sdk",
+                "ragvault-test-plugin"
+              ],
+              "envPatterns": [
+                "EXAMPLE_*",
+                "TEST_*"
+              ]
+            },
+            "metadata": {
+              "tags": [
+                "test",
+                "example",
+                "sdk"
+              ],
+              "category": "devtools",
+              "maturity": "experimental",
+              "support": {
+                "official": true,
+                "community": false,
+                "enterprise": false
+              }
+            }
+          },
+          "published": "2025-08-13T02:28:43.337Z"
+        }
+      }
+    }
+  },
+  "signatures": [
+    {
+      "keyid": "5af1a4fce4a6fb9434107927f4e00136097e7d65b9d5a24a6622a0586f786f72",
+      "signature": "5012762173dc6dd113410808a512bf57fe92e398841dfa9abc99cf5c20a609b5c357b1baca99438e804bfb92b477780579ef9a674a6e39c20ceff2a6dfc18fc8c3fa5b5331da709f0e379bd35e23244949cc1ef1eaa0a8afb652ab36fbc674dcec3b67c436af78b786e4f193aa77c65a6e5e3c48378e3703608e0d1f0b06343d40d92ad7ed216331e3386bd03d76d24a55c2022866b061a61646b6caa3858168d21822b113dd7b7675f6e41cbef1052c7a517832d8c8d25cb53bcc688832377fd359daf69285c861519baf5be41de36b9d501eaa6a865e04f2beaa3964d3bda96af9e0ecb0e531568ecfd6dcfd6a93ae3bd8f5e44ea59663a75402e49b2a79a1"
+    }
+  ]
+}
