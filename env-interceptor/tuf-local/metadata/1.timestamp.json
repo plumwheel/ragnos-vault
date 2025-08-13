@@ -1,0 +1,23 @@
+{
+  "signed": {
+    "_type": "timestamp",
+    "spec_version": "1.0.0",
+    "version": 1,
+    "expires": "2025-08-13T05:25:38.187Z",
+    "meta": {
+      "snapshot.json": {
+        "version": 1,
+        "length": 692,
+        "hashes": {
+          "sha256": "31f43c35935b99b4bb6b108bcb32ebab5e339b548fc7da284a6b22c1efcf25bd"
+        }
+      }
+    }
+  },
+  "signatures": [
+    {
+      "keyid": "427055a1ec43006416f46dcbb9d3336845b41a9d45b8a539363d00643d3ad0bb",
+      "signature": "rkTkZEqbz6R5uAvsy7ry3YTEnLKwjTW5Wbj4Pu6+MaoSAZw1bcsIyAkYsm/xqc19ZUfr3+nd9707gj3urTv62TM6ImAidR34KQGq+fPtRrnmOiAhaeshgAoTFT5he5LHwCY1gMgt7UokfmClOrtntnW5axcGzMml8xZ64i6jGvDGUKh8H/pFX7qtyGesIpbBaDjoYAVEa6Dj6ZpDhfIZXldc+UVAdhSENwAvODVcMFpjDBzA1jdA0AYYJelwp8PWcQ5KACHeO/6jRPFdbz6grwxZHJlkSDseYWweXqAirOPnALXi3phPl4k2GgEzmkCAnUf0jUb0OSLCX4ZnkANGrw=="
+    }
+  ]
+}

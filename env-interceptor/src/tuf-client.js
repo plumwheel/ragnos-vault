@@ -48,14 +48,39 @@ class TUFClient {
         throw new Error('Root metadata required for TUF client initialization');
       }
       
-      // Initialize tuf-js Updater
-      this.updater = new Updater({
-        metadataUrl: this.options.repositoryUrl,
-        targetUrl: this.options.repositoryUrl,
-        rootMetadata: this.rootMetadata,
-        metadataDir: this.options.metadataDir,
-        cacheDir: this.options.cacheDir
-      });
+      // Debug: inspect root metadata structure before passing to TUF-js
+      console.log('🔍 TUF-js Debug: Root metadata structure:');
+      console.log('  Signatures:', this.rootMetadata.signatures?.map(s => ({
+        keyid: s.keyid?.substring(0, 8) + '...',
+        signature_type: typeof s.signature,
+        signature_preview: s.signature?.substring(0, 20) + '...'
+      })));
+      
+      if (this.rootMetadata.signed?.keys) {
+        const keys = Object.values(this.rootMetadata.signed.keys);
+        console.log('  Keys:', keys.map(k => ({
+          keytype: k.keytype,
+          scheme: k.scheme,
+          schemes: k.schemes
+        })));
+      }
+      
+      // Initialize tuf-js Updater with detailed error handling
+      try {
+        this.updater = new Updater({
+          metadataUrl: this.options.repositoryUrl,
+          targetUrl: this.options.repositoryUrl,
+          rootMetadata: this.rootMetadata,
+          metadataDir: this.options.metadataDir,
+          cacheDir: this.options.cacheDir
+        });
+        console.log('✅ TUF-js Updater initialized successfully');
+      } catch (tufError) {
+        console.log('❌ TUF-js Updater initialization failed:');
+        console.log('  Error message:', tufError.message);
+        console.log('  Error stack:', tufError.stack?.split('\n')[0]);
+        throw tufError;
+      }
       
       this.initialized = true;
       const initTime = Date.now() - startTime;

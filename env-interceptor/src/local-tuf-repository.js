@@ -154,7 +154,7 @@ class LocalTUFRepository {
     const keyData = {
       keyid: keyId,
       keytype: 'rsa',
-      scheme: 'rsa-pss-sha256',
+      scheme: 'rsassa-pss-sha256',  // TUF-js compatible scheme name
       keyval: {
         public: keyPair.publicKey.replace(/-----BEGIN PUBLIC KEY-----\n|-----END PUBLIC KEY-----\n|\n/g, '')
       },
@@ -191,7 +191,7 @@ class LocalTUFRepository {
       key: privateKey,
       padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
       saltLength: crypto.constants.RSA_PSS_SALTLEN_DIGEST
-    }, 'hex');
+    }, 'base64');  // Changed from 'hex' to 'base64' for TUF-js compatibility
 
     return {
       keyid: keyId,
@@ -246,6 +246,7 @@ class LocalTUFRepository {
       keys[key.keyid] = {
         keytype: key.keytype,
         scheme: key.scheme,
+        schemes: [key.scheme],  // TUF-js expects schemes as array
         keyval: key.keyval
       };
     });

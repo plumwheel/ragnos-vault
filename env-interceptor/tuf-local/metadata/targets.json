@@ -1,0 +1,15 @@
+{
+  "signed": {
+    "_type": "targets",
+    "spec_version": "1.0.0",
+    "version": 1,
+    "expires": "2025-11-11T03:25:38.185Z",
+    "targets": {}
+  },
+  "signatures": [
+    {
+      "keyid": "faeb84e77374bacc5079f0f1c44e87d5e516ab0823d2363070b8b6d732ea3194",
+      "signature": "QhHIISUrVdmltx96RxMCT5DE7JIv9zxgoYXOQPnr6vU4tfM1YPkh4qonp9iElCvE2V91ZGQGF05gQ/y6gQi/8DmBtbwkXmxQG5dZZkGTCbqAWD8eI/kuj3XwDFkqtWkE02Wj0v0NanP9Fadi4jmoSCm6Qs1a0B9DwDKF/qlSH4QRSff+PnvTQ5UNrwGjUW3uapcYFQYl6WQ8/cBOdDxYQG+2osq45wOTnLW4FRVp9+JT7IebJ5N60ZkxkOtMruCx/dQmdUuyvESWjroO5jBfX0zxBIVA3L1kXBxNlOykMxGjEOPQvjvvXiTuOYrfuBUWocXdPePm+Yo+Cgiqa6e/GQ=="
+    }
+  ]
+}

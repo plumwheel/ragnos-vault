@@ -1,0 +1,23 @@
+{
+  "signed": {
+    "_type": "snapshot",
+    "spec_version": "1.0.0",
+    "version": 1,
+    "expires": "2025-08-20T03:25:38.186Z",
+    "meta": {
+      "targets.json": {
+        "version": 1,
+        "length": 566,
+        "hashes": {
+          "sha256": "9e0dd27495f82f6ce6c763d3c5975523b79e95d6b7282bbda41b210e1e1ded52"
+        }
+      }
+    }
+  },
+  "signatures": [
+    {
+      "keyid": "a963acaf154d7f9c081e2259561920d6fd76b20b05899b505d9c34788cf1a279",
+      "signature": "S3gvFkdUMvUvcqyJhlzO/SOcsPzu/jzyj79xv0Y/6DPixaDxGqOdPq3pO3CKRvtRWRiIs5OPDE/u55wV5wfEsVZ2bR38DxHGQ87FkfxTjpxXBG59nV69Eev774NAk7df5vZoIEXsIusYKXL2el5i4g1ILLqhFcvIgurkpPzOlN5hCL/a2Ot0gBrBrRE2ITAHi91MQU0xe8fB3cUxdw686/mKK5d+4HprxzDGMfBpI71vyTYKdHQu1hqFUTOpfEuwwwheD2b79X5cwOmr6uEL/AIFarkdCeoASGyThQezkVlC0gWvu89rCm2kc0wnCVcv7Vgt3rwmuYu0ZAtECiZM2Q=="
+    }
+  ]
+}
